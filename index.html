@@ -1,0 +1,1698 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rian Fernandes | Systems Architect & High-End Digital Products</title>
+  <meta name="description" content="Engenheiro de software, arquiteto de sistemas e criador de experiências digitais imersivas. Porto Alegre, RS. Death to vibe-coding.">
+  
+  <!-- Fontes de Alta Precisão (Antonio = Condensada Monumental tipo Druk; JetBrains Mono = Código/Terminal; Silkscreen = Arcade/Pixel; Space Grotesk = Editorial Moderno) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Antonio:wght@700&family=JetBrains+Mono:wght@400;500;700&family=Silkscreen&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* ==========================================================================
+       DESIGN TOKENS & RESET - NEO-BRUTALISMO TÉCNICO // ID VISUAL RIAN
+       ========================================================================== */
+    :root {
+      --bg-dark: #121214;
+      --bg-card: #18181b;
+      --bg-card-hover: #222227;
+      --border: #27272a;
+      --border-accent: #ff6a00;
+      --border-light: #3f3f46;
+      --accent: #ff6a00;
+      --accent-hover: #ff8533;
+      --accent-glow: rgba(255, 106, 0, 0.25);
+      --text-main: #f4f4f5;
+      --text-muted: #71717a;
+      --text-dim: #52525b;
+      
+      --font-display: 'Antonio', -apple-system, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+      --font-pixel: 'Silkscreen', monospace;
+      --font-heading: 'Space Grotesk', sans-serif;
+      
+      --ease-snappy: cubic-bezier(0.16, 1, 0.3, 1);
+      --ease-mechanical: cubic-bezier(0.25, 1, 0.5, 1);
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      cursor: inherit;
+    }
+
+    html {
+      font-size: 16px;
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      font-family: var(--font-mono);
+      scroll-behavior: smooth;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      overflow-x: hidden;
+      cursor: crosshair;
+      min-height: 100vh;
+      position: relative;
+    }
+
+    ::selection {
+      background-color: var(--accent);
+      color: #000;
+    }
+
+    /* Linhas de Grid Guia Sutis no Fundo */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background-image: 
+        linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+      background-size: 80px 80px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    button {
+      background: none;
+      border: none;
+      font: inherit;
+      color: inherit;
+    }
+
+    /* Utilitários Tipográficos */
+    .mono { font-family: var(--font-mono); }
+    .pixel { font-family: var(--font-pixel); }
+    .display { font-family: var(--font-display); }
+    .heading { font-family: var(--font-heading); }
+
+    /* ==========================================================================
+       CURSOR MAGNÉTICO CUSTOMIZADO
+       ========================================================================== */
+    .custom-cursor {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 14px;
+      height: 14px;
+      border: 1.5px solid var(--accent);
+      border-radius: 0; /* Zero border-radius brutalista */
+      pointer-events: none;
+      transform: translate(-50%, -50%);
+      transition: width 0.2s var(--ease-snappy), height 0.2s var(--ease-snappy), background-color 0.2s, border-color 0.2s;
+      z-index: 99999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      mix-blend-mode: normal;
+    }
+    .custom-cursor.active {
+      width: 48px;
+      height: 48px;
+      background-color: var(--accent);
+      border-color: var(--accent);
+    }
+    .custom-cursor-label {
+      font-size: 9px;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      color: #000;
+      display: none;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .custom-cursor.active .custom-cursor-label {
+      display: block;
+    }
+
+    /* ==========================================================================
+       MOMENTO 1: O LOADER MECÂNICO DE ODÔMETRO
+       ========================================================================== */
+    html.loading-active, body.loading-active {
+      overflow: hidden !important;
+      height: 100vh !important;
+    }
+
+    .loader {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: var(--bg-dark);
+      z-index: 10000;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 2.5rem 3vw;
+      overflow: hidden;
+      box-sizing: border-box;
+      transition: opacity 0.6s var(--ease-snappy), transform 0.6s var(--ease-snappy);
+    }
+    .loader.complete {
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(-100%);
+    }
+
+    .loader-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      letter-spacing: 1px;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 1.25rem;
+    }
+    .loader-header .accent-tag {
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    .loader-center {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1.5rem;
+      margin: auto 0;
+    }
+
+    /* O odômetro mecânico de fita */
+    .odometer-wrapper {
+      display: flex;
+      align-items: baseline;
+      font-family: var(--font-display);
+      font-size: clamp(4.5rem, 11vw, 8.5rem);
+      line-height: 1.15;
+      font-weight: 700;
+      color: var(--text-main);
+      overflow: hidden;
+      height: 1.15em;
+    }
+    .odometer-column {
+      display: inline-block;
+      overflow: hidden;
+      height: 1.15em;
+      position: relative;
+    }
+    .odometer-strip {
+      display: flex;
+      flex-direction: column;
+      transition: transform 1.8s cubic-bezier(0.85, 0, 0.15, 1);
+      transform: translateY(0%);
+    }
+    .odometer-strip span {
+      display: block;
+      height: 1.15em;
+      line-height: 1.15;
+      text-align: center;
+    }
+    .odometer-percent {
+      font-size: 0.4em;
+      color: var(--accent);
+      margin-left: 0.5rem;
+      font-family: var(--font-mono);
+    }
+
+    .loader-status {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .loader-status .pulse-dot {
+      width: 8px;
+      height: 8px;
+      background-color: var(--accent);
+      box-shadow: 0 0 10px var(--accent);
+      animation: pulse 1s infinite alternate;
+    }
+
+    @keyframes pulse {
+      0% { opacity: 0.3; transform: scale(0.8); }
+      100% { opacity: 1; transform: scale(1.2); }
+    }
+
+    .loader-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid var(--border);
+      padding-top: 1.25rem;
+      margin-top: auto;
+    }
+
+    .btn-enter {
+      padding: 0.85rem 1.75rem;
+      border: 1px solid var(--accent);
+      background-color: transparent;
+      color: var(--accent);
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      transition: all 0.2s var(--ease-snappy);
+      cursor: pointer;
+      opacity: 0;
+      transform: translateY(10px);
+      pointer-events: none;
+    }
+    .btn-enter.ready {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+      animation: enterPulse 1.8s infinite alternate;
+    }
+    @keyframes enterPulse {
+      0% { border-color: var(--accent); box-shadow: 0 0 5px var(--accent-glow); }
+      100% { border-color: #fff; box-shadow: 0 0 20px var(--accent-glow); }
+    }
+    .btn-enter:hover {
+      background-color: var(--accent);
+      color: #000;
+      box-shadow: 0 0 20px var(--accent-glow);
+    }
+
+    /* ==========================================================================
+       HEADER FIXO / HUD INDUSTRIAL
+       ========================================================================== */
+    header.hud {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 64px;
+      background-color: rgba(18, 18, 20, 0.85);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 2.5vw;
+      z-index: 1000;
+    }
+
+    .hud-brand {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: 700;
+      font-size: 0.95rem;
+      letter-spacing: 1.5px;
+    }
+    .hud-brand .accent-bullet {
+      color: var(--accent);
+    }
+    .hud-brand .cursor-blink {
+      display: inline-block;
+      width: 7px;
+      height: 14px;
+      background-color: var(--accent);
+      animation: blink 1s step-end infinite;
+    }
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+
+    .hud-center {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .hud-right {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+    }
+
+    .btn-game-toggle {
+      border: 1px solid var(--border);
+      padding: 0.4rem 0.8rem;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      letter-spacing: 1px;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .btn-game-toggle:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    /* ==========================================================================
+       HERO SECTION MONUMENTAL
+       ========================================================================== */
+    .hero {
+      padding: 120px 2.5vw 60px 2.5vw;
+      position: relative;
+      z-index: 10;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .hero-preheader {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 1rem;
+      margin-bottom: 2rem;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+    .hero-preheader .tag {
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    .hero-title-wrap {
+      margin: 1.5rem 0 3rem 0;
+    }
+
+    .hero-huge-title {
+      font-family: var(--font-display);
+      font-size: clamp(3.8rem, 11vw, 11.5rem);
+      line-height: 0.85;
+      text-transform: uppercase;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin: 0;
+      color: var(--text-main);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .hero-huge-title .line-stroke {
+      color: transparent;
+      -webkit-text-stroke: 1.5px var(--text-main);
+      transition: color 0.3s, -webkit-text-stroke 0.3s;
+    }
+    .hero-huge-title .line-stroke:hover {
+      color: var(--accent);
+      -webkit-text-stroke: 1.5px var(--accent);
+    }
+
+    .hero-submanifesto {
+      font-family: var(--font-mono);
+      font-size: clamp(0.9rem, 1.5vw, 1.25rem);
+      color: var(--accent);
+      margin-top: 1.5rem;
+      letter-spacing: 1px;
+      font-weight: 500;
+    }
+
+    /* Grid Técnico de 4 Colunas (Bordas Secas e Zero Raio) */
+    .tech-specs-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      margin-top: 3rem;
+    }
+    .spec-cell {
+      padding: 1.5rem;
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      position: relative;
+    }
+    .spec-cell:last-child {
+      border-right: none;
+    }
+    .spec-cell::before {
+      content: "+";
+      position: absolute;
+      top: -9px;
+      left: -5px;
+      color: var(--text-dim);
+      font-family: var(--font-mono);
+      font-size: 14px;
+    }
+    .spec-label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+    }
+    .spec-value {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--text-main);
+      letter-spacing: 0.5px;
+    }
+    .spec-value.accent {
+      color: var(--accent);
+    }
+
+    /* ==========================================================================
+       SEÇÃO: O MANIFESTO ANTI-VIBE CODING // ABOUT
+       ========================================================================== */
+    .manifesto-section {
+      padding: 80px 2.5vw;
+      border-bottom: 1px solid var(--border);
+      position: relative;
+      z-index: 10;
+    }
+
+    .section-eyebrow {
+      font-size: 0.75rem;
+      letter-spacing: 2px;
+      color: var(--accent);
+      text-transform: uppercase;
+      margin-bottom: 2rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .manifesto-title {
+      font-family: var(--font-display);
+      font-size: clamp(2.5rem, 6vw, 5.5rem);
+      line-height: 0.95;
+      text-transform: uppercase;
+      font-weight: 700;
+      max-width: 90%;
+      margin-bottom: 3rem;
+    }
+
+    .manifesto-columns {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      font-size: 1.05rem;
+      line-height: 1.7;
+      color: #d4d4d8;
+    }
+    .manifesto-columns p strong {
+      color: var(--text-main);
+      border-bottom: 1px solid var(--accent);
+      padding-bottom: 2px;
+    }
+
+    /* ==========================================================================
+       SEÇÃO: O REPERTÓRIO (SHOWCASE ESTILO CANAL DE TV ANALÓGICA / CRT)
+       ========================================================================== */
+    .work-section {
+      padding: 80px 2.5vw;
+      border-bottom: 1px solid var(--border);
+      position: relative;
+      z-index: 10;
+    }
+
+    .work-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      margin-bottom: 3rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 1.5rem;
+    }
+
+    .work-title {
+      font-family: var(--font-display);
+      font-size: clamp(3rem, 7vw, 6.5rem);
+      line-height: 0.85;
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+
+    .channel-tuner {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .channel-display {
+      font-family: var(--font-pixel);
+      font-size: 1.5rem;
+      color: var(--accent);
+      border: 1px solid var(--border-accent);
+      padding: 0.5rem 1.25rem;
+      background: rgba(255, 106, 0, 0.05);
+      letter-spacing: 2px;
+    }
+
+    .btn-channel {
+      border: 1px solid var(--border);
+      padding: 0.75rem 1.25rem;
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text-main);
+      transition: all 0.2s;
+    }
+    .btn-channel:hover {
+      border-color: var(--accent);
+      background-color: var(--accent);
+      color: #000;
+    }
+
+    /* O Monitor / Showcase CRT */
+    .crt-screen-container {
+      position: relative;
+      background-color: #0a0a0c;
+      border: 1px solid var(--border);
+      padding: 2.5rem;
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 3rem;
+      align-items: center;
+      overflow: hidden;
+    }
+
+    /* Scanlines retrô sutis */
+    .crt-screen-container::after {
+      content: " ";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%);
+      background-size: 100% 4px;
+      pointer-events: none;
+      z-index: 5;
+      opacity: 0.6;
+    }
+
+    .crt-canvas-wrapper {
+      position: relative;
+      aspect-ratio: 16 / 10;
+      border: 1px solid var(--border);
+      background-color: #000;
+      overflow: hidden;
+    }
+    .crt-canvas-wrapper canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .project-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      z-index: 10;
+    }
+
+    .project-tag {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: var(--accent);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    .project-name {
+      font-family: var(--font-display);
+      font-size: clamp(2.5rem, 5vw, 4.5rem);
+      line-height: 0.9;
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+
+    .project-desc {
+      font-size: 1rem;
+      line-height: 1.7;
+      color: #a1a1aa;
+    }
+
+    .project-specs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      margin-top: 0.5rem;
+    }
+    .spec-pill {
+      font-size: 0.75rem;
+      padding: 0.35rem 0.75rem;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+    }
+
+    .project-link-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 1rem 1.75rem;
+      border: 1px solid var(--accent);
+      color: var(--accent);
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-top: 1rem;
+      align-self: flex-start;
+      transition: all 0.2s var(--ease-snappy);
+    }
+    .project-link-btn:hover {
+      background-color: var(--accent);
+      color: #000;
+      box-shadow: 0 0 25px var(--accent-glow);
+    }
+
+    /* ==========================================================================
+       EASTER EGG: PONG ARCADE MODAL / DRAWER
+       ========================================================================== */
+    .pong-drawer {
+      position: fixed;
+      inset: 0;
+      background-color: rgba(10, 10, 12, 0.95);
+      backdrop-filter: blur(12px);
+      z-index: 9999;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2vw;
+    }
+    .pong-drawer.active {
+      display: flex;
+    }
+    .pong-container {
+      width: min(800px, 90vw);
+      border: 1px solid var(--border-accent);
+      padding: 1.5rem;
+      background-color: #000;
+      position: relative;
+    }
+    .pong-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 1rem;
+      margin-bottom: 1rem;
+    }
+    .pong-header h3 {
+      font-family: var(--font-pixel);
+      color: var(--accent);
+      font-size: 1rem;
+      letter-spacing: 2px;
+    }
+    .btn-close-pong {
+      border: 1px solid var(--border);
+      padding: 0.4rem 0.8rem;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+    .btn-close-pong:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+    #pongCanvas {
+      width: 100%;
+      height: 400px;
+      background-color: #0d0d11;
+      border: 1px solid var(--border);
+      display: block;
+    }
+    .pong-controls {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 1rem;
+    }
+
+    /* ==========================================================================
+       FOOTER MONUMENTAL COM COPIAR E-MAIL EM 1 CLIQUE
+       ========================================================================== */
+    footer.monumental {
+      padding: 100px 2.5vw 80px 2.5vw;
+      position: relative;
+      z-index: 10;
+      background-color: var(--bg-dark);
+    }
+
+    .footer-top-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 2rem;
+      margin-bottom: 3.5rem;
+    }
+
+    .footer-badge {
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      color: var(--accent);
+      letter-spacing: 2px;
+      font-weight: 700;
+    }
+
+    .footer-cta-headline {
+      font-family: var(--font-display);
+      font-size: clamp(3rem, 8vw, 8rem);
+      line-height: 0.85;
+      text-transform: uppercase;
+      font-weight: 700;
+      margin-bottom: 3rem;
+    }
+
+    /* Barra Interativa de Cópia de E-mail (Estilo Yeahright Refinado) */
+    .contact-bar-container {
+      display: grid;
+      grid-template-columns: 1fr 140px;
+      border: 1px solid var(--border);
+      background-color: var(--bg-card);
+      margin-bottom: 4rem;
+      transition: border-color 0.2s;
+    }
+    .contact-bar-container:hover {
+      border-color: var(--accent);
+    }
+
+    .contact-email-link {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      padding: 1.5rem 2rem;
+      font-family: var(--font-mono);
+      font-size: clamp(1rem, 2.2vw, 1.8rem);
+      font-weight: 700;
+      color: var(--text-main);
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+    .contact-email-link .accent-square {
+      width: 14px;
+      height: 14px;
+      background-color: var(--accent);
+      flex-shrink: 0;
+    }
+
+    .btn-copy-action {
+      background-color: transparent;
+      border-left: 1px solid var(--border);
+      color: var(--text-main);
+      font-family: var(--font-mono);
+      font-size: 0.9rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s var(--ease-snappy);
+    }
+    .btn-copy-action:hover {
+      background-color: rgba(255, 106, 0, 0.1);
+      color: var(--accent);
+    }
+    .btn-copy-action.copied {
+      background-color: var(--accent);
+      color: #000;
+      font-weight: 800;
+    }
+
+    /* Linha de Metadados / Direitos / Redes */
+    .footer-bottom-grid {
+      display: grid;
+      grid-template-columns: 1.5fr 1fr 1fr;
+      border-top: 1px solid var(--border);
+      padding-top: 2rem;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      align-items: center;
+    }
+    .footer-social-links {
+      display: flex;
+      gap: 1.5rem;
+    }
+    .footer-social-links a:hover {
+      color: var(--accent);
+    }
+    .footer-back-to-top {
+      text-align: right;
+    }
+    .footer-back-to-top button:hover {
+      color: var(--accent);
+    }
+
+    /* Assinatura Monumental na Base (O cupom visual que fecha o site) */
+    .monumental-signature {
+      margin-top: 5rem;
+      border-top: 1px solid var(--border);
+      padding-top: 2rem;
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      overflow: hidden;
+    }
+    .signature-text {
+      font-family: var(--font-display);
+      font-size: clamp(3.5rem, 11vw, 12rem);
+      line-height: 0.75;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: -0.03em;
+      color: var(--text-main);
+      white-space: nowrap;
+    }
+    .signature-block {
+      width: clamp(40px, 8vw, 100px);
+      height: clamp(35px, 7vw, 85px);
+      background-color: var(--accent);
+      margin-left: 1.5rem;
+      flex-shrink: 0;
+    }
+
+    /* ==========================================================================
+       RESPONSIVIDADE RIGOROSA
+       ========================================================================== */
+    @media (max-width: 900px) {
+      .tech-specs-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+      .spec-cell:nth-child(2) {
+        border-right: none;
+      }
+      .manifesto-columns {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+      }
+      .crt-screen-container {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+        padding: 1.5rem;
+      }
+      .contact-bar-container {
+        grid-template-columns: 1fr 100px;
+      }
+      .footer-bottom-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+        text-align: left;
+      }
+      .footer-back-to-top {
+        text-align: left;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .hud-center {
+        display: none;
+      }
+      .tech-specs-grid {
+        grid-template-columns: 1fr;
+      }
+      .spec-cell {
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+      }
+      .contact-bar-container {
+        grid-template-columns: 1fr;
+      }
+      .btn-copy-action {
+        border-left: none;
+        border-top: 1px solid var(--border);
+        padding: 1rem;
+      }
+    }
+  </style>
+</head>
+<body class="loading-active">
+
+  <!-- CURSOR MAGNÉTICO -->
+  <div class="custom-cursor" id="customCursor">
+    <span class="custom-cursor-label" id="cursorLabel">VER</span>
+  </div>
+
+  <!-- LOADER DE ODÔMETRO MECÂNICO -->
+  <section class="loader" id="loader">
+    <div class="loader-header">
+      <span>● SISTEMA RIAN_OS // INITIALIZING</span>
+      <span class="accent-tag">[60 FPS ENGINE]</span>
+      <span>POA / BRASIL</span>
+    </div>
+
+    <div class="loader-center">
+      <div class="odometer-wrapper">
+        <div class="odometer-column">
+          <div class="odometer-strip" id="odoHundreds">
+            <span>0</span><span>1</span>
+          </div>
+        </div>
+        <div class="odometer-column">
+          <div class="odometer-strip" id="odoTens">
+            <span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>0</span>
+          </div>
+        </div>
+        <div class="odometer-column">
+          <div class="odometer-strip" id="odoUnits">
+            <span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>0</span>
+          </div>
+        </div>
+        <span class="odometer-percent">%</span>
+      </div>
+
+      <div class="loader-status">
+        <div class="pulse-dot"></div>
+        <span id="loaderStatusText">CARREGANDO MÓDULOS DE SISTEMA</span>
+      </div>
+    </div>
+
+    <div class="loader-footer">
+      <span class="mono" style="font-size: 0.8rem; color: var(--text-dim);">AUDIO FEEDBACK ENABLED // SYNTH ENGINE READY</span>
+      <button class="btn-enter" id="btnEnter">ENTRAR NO SISTEMA [ENTER]</button>
+    </div>
+  </section>
+
+  <!-- HUD INDUSTRIAL FIXO -->
+  <header class="hud">
+    <div class="hud-brand">
+      <span class="accent-bullet">●</span>
+      <span>RIAN FERNANDES</span>
+      <span class="cursor-blink"></span>
+    </div>
+
+    <div class="hud-center">
+      <span>// BASE: POA, RS</span>
+      <span id="hudClock">BRT: --:--:--</span>
+      <span style="color: var(--accent);">● OPERATIONAL</span>
+    </div>
+
+    <div class="hud-right">
+      <button class="btn-game-toggle" id="btnOpenPong">
+        <span class="pixel" style="color: var(--accent);">[?]</span>
+        <span>BORED?</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- EASTER EGG: PONG DRAWER -->
+  <div class="pong-drawer" id="pongDrawer">
+    <div class="pong-container">
+      <div class="pong-header">
+        <h3>ARCADE / PONG 60FPS</h3>
+        <button class="btn-close-pong" id="btnClosePong">[FECHAR ×]</button>
+      </div>
+      <canvas id="pongCanvas" width="760" height="400"></canvas>
+      <div class="pong-controls">
+        <span>CONTROLE: MOVA O MOUSE / TOQUE NA TELA</span>
+        <span id="pongScore">PLAYER: 0 | CPU: 0</span>
+      </div>
+    </div>
+  </div>
+
+  <main>
+    <!-- HERO SECTION -->
+    <section class="hero" id="hero">
+      <div class="hero-preheader">
+        <span class="tag">[SOLOPRENEUR // HIGH-END DIGITAL PRODUCTS]</span>
+        <span>DISPONÍVEL PARA CONTRATOS SELECIONADOS</span>
+        <span>2026 EDITION</span>
+      </div>
+
+      <div class="hero-title-wrap">
+        <h1 class="hero-huge-title">
+          <span>FULL-STACK</span>
+          <span class="line-stroke">SYSTEMS</span>
+          <span>ARCHITECT</span>
+        </h1>
+        <div class="hero-submanifesto">
+          [DEATH TO VIBE-CODING · SITES COM CARA DE I.A NÃO VENDEM]
+        </div>
+      </div>
+
+      <!-- SPECS GRID -->
+      <div class="tech-specs-grid">
+        <div class="spec-cell">
+          <span class="spec-label">01 // ROLE</span>
+          <span class="spec-value">SYSTEM ARCHITECT</span>
+        </div>
+        <div class="spec-cell">
+          <span class="spec-label">02 // BASE</span>
+          <span class="spec-value">PORTO ALEGRE, RS</span>
+        </div>
+        <div class="spec-cell">
+          <span class="spec-label">03 // CORE STACK</span>
+          <span class="spec-value">PYTHON · GO · THREE.JS · TS</span>
+        </div>
+        <div class="spec-cell">
+          <span class="spec-label">04 // AVAILABILITY</span>
+          <span class="spec-value accent">● SELECT PROJECTS // CNPJ ATIVO</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- MANIFESTO SECTION -->
+    <section class="manifesto-section">
+      <div class="section-eyebrow">
+        <span>// 01 · POSICIONAMENTO E ENGENHARIA</span>
+      </div>
+
+      <h2 class="manifesto-title">
+        TEMPLATES DE PLÁSTICO E SITES DE I.A NÃO CRIAM AUTORIDADE.
+      </h2>
+
+      <div class="manifesto-columns">
+        <p>
+          O mercado foi inundado por geradores automáticos que cospem o mesmo gradiente roxo, cards com cantos arredondados e promessas vazias de "transformação digital". <strong>Sites com cara estampada de inteligência artificial destroem a percepção de valor.</strong> Nenhuma empresa séria paga ticket alto por uma página que parece ter sido montada em 3 minutos por um modelo genérico.
+        </p>
+        <p>
+          O que converte de verdade é <strong>precisão visual, microinterações táteis, desempenho de 60 FPS contínuos e arquitetura sob medida</strong>. Do scrollytelling imersivo em WebGL até pipelines com Blindagem GEO para o ChatGPT e Perplexity recomendarem o seu negócio, cada pixel é projetado com intenção e engenharia pura.
+        </p>
+      </div>
+    </section>
+
+    <!-- WORK SECTION (TV ANALÓGICA / CRT CHANNELS) -->
+    <section class="work-section" id="work">
+      <div class="work-header">
+        <div>
+          <div class="section-eyebrow">// 02 · O REPERTÓRIO</div>
+          <h2 class="work-title">THE ARCHIVES</h2>
+        </div>
+        
+        <div class="channel-tuner">
+          <button class="btn-channel" id="btnPrevChannel">←</button>
+          <div class="channel-display" id="channelDisplay">CH 01</div>
+          <button class="btn-channel" id="btnNextChannel">→</button>
+        </div>
+      </div>
+
+      <!-- MONITOR CRT COM CANVAS INTERATIVO -->
+      <div class="crt-screen-container">
+        <div class="crt-canvas-wrapper">
+          <canvas id="crtCanvas" width="600" height="380"></canvas>
+        </div>
+
+        <div class="project-meta">
+          <span class="project-tag" id="projTag">01 // THREE.JS SCROLLYTELLING</span>
+          <h3 class="project-name" id="projName">NEXUS 3D</h3>
+          <p class="project-desc" id="projDesc">
+            Landing page no padrão Apple Scrollytelling. O scroll do usuário orquestra rotação cinemática em WebGL e visão explodida (exploded view) em 5 camadas com suspensão magnética a 60 FPS no iPhone.
+          </p>
+          <div class="project-specs" id="projSpecs">
+            <span class="spec-pill">Three.js</span>
+            <span class="spec-pill">WebGL</span>
+            <span class="spec-pill">Apple Grade</span>
+            <span class="spec-pill">&lt;0.8s Load</span>
+          </div>
+          <a href="https://rianfrnds.github.io/nexus-3d/" target="_blank" rel="noopener noreferrer" class="project-link-btn" id="projLink">
+            <span>VISITAR PROJETO ↗</span>
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- FOOTER MONUMENTAL -->
+  <footer class="monumental" id="contact">
+    <div class="footer-top-meta">
+      <span class="footer-badge">[DEATH TO VIBE-CODING]</span>
+      <span class="mono" style="font-size: 0.8rem; color: var(--text-muted);">// INBOX ABERTA PARA PROJETOS DE ALTO PADRÃO</span>
+    </div>
+
+    <h2 class="footer-cta-headline">
+      LET'S BUILD REAL STUFF.
+    </h2>
+
+    <!-- BARRA INTERATIVA DE CONTATO E CÓPIA DE E-MAIL -->
+    <div class="contact-bar-container">
+      <a href="mailto:rian@rianfernandes.com.br" class="contact-email-link">
+        <div class="accent-square"></div>
+        <span>RIAN@RIANFERNANDES.COM.BR</span>
+      </a>
+      <button class="btn-copy-action" id="btnCopyEmail">
+        <span id="copyBtnText">COPY</span>
+      </button>
+    </div>
+
+    <div class="footer-bottom-grid">
+      <div>
+        <span>© 2026 RIAN FERNANDES.. HAND-CRAFTED IN RS. MOSTLY.</span>
+      </div>
+      <div class="footer-social-links">
+        <a href="https://instagram.com/rianfernandesdev" target="_blank" rel="noopener noreferrer">INSTAGRAM ↗</a>
+        <a href="https://github.com/rianfrnds" target="_blank" rel="noopener noreferrer">GITHUB ↗</a>
+        <a href="https://wa.me/5551999999999" target="_blank" rel="noopener noreferrer">WHATSAPP ↗</a>
+      </div>
+      <div class="footer-back-to-top">
+        <button id="btnBackToTop">VOLTAR AO TOPO ↑</button>
+      </div>
+    </div>
+
+    <!-- ASSINATURA TIPOGRÁFICA MONUMENTAL -->
+    <div class="monumental-signature">
+      <span class="signature-text">RIAN FERNANDES</span>
+      <div class="signature-block"></div>
+    </div>
+  </footer>
+
+  <!-- ==========================================================================
+       SCRIPTS: AUDIO SYNTH, LOADER, CRT CHANNELS, PONG E CURSOR
+       ========================================================================== -->
+  <script>
+    /* ==========================================================================
+       1. WEB AUDIO API SYNTHESIZER (SOM NATIVO SEM ARQUIVOS PESADOS)
+       ========================================================================== */
+    class SoundEngine {
+      constructor() {
+        this.ctx = null;
+        this.enabled = false;
+      }
+
+      init() {
+        if (!this.ctx) {
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          if (AudioContext) {
+            this.ctx = new AudioContext();
+            this.enabled = true;
+          }
+        }
+        if (this.ctx && this.ctx.state === 'suspended') {
+          this.ctx.resume();
+        }
+      }
+
+      // Som mecânico de relé / clique
+      playClick() {
+        if (!this.enabled || !this.ctx) return;
+        try {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(320, this.ctx.currentTime);
+          osc.frequency.exponentialRampToValueAtTime(40, this.ctx.currentTime + 0.03);
+          gain.gain.setValueAtTime(0.15, this.ctx.currentTime);
+          gain.gain.linearRampToValueAtTime(0.01, this.ctx.currentTime + 0.03);
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start();
+          osc.stop(this.ctx.currentTime + 0.03);
+        } catch(e) {}
+      }
+
+      // Bipe sutil de canal
+      playBeep(freq = 520) {
+        if (!this.enabled || !this.ctx) return;
+        try {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+          gain.gain.setValueAtTime(0.08, this.ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.06);
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start();
+          osc.stop(this.ctx.currentTime + 0.06);
+        } catch(e) {}
+      }
+
+      // Chime harmônico cristalino ao carregar
+      playChime() {
+        if (!this.enabled || !this.ctx) return;
+        try {
+          const notes = [440, 554.37, 659.25, 880];
+          notes.forEach((freq, idx) => {
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(freq, this.ctx.currentTime + idx * 0.08);
+            gain.gain.setValueAtTime(0.12, this.ctx.currentTime + idx * 0.08);
+            gain.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + idx * 0.08 + 0.8);
+            osc.connect(gain);
+            gain.connect(this.ctx.destination);
+            osc.start(this.ctx.currentTime + idx * 0.08);
+            osc.stop(this.ctx.currentTime + idx * 0.08 + 0.8);
+          });
+        } catch(e) {}
+      }
+
+      // Som de sucesso no COPY
+      playSuccess() {
+        if (!this.enabled || !this.ctx) return;
+        try {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(587.33, this.ctx.currentTime);
+          osc.frequency.setValueAtTime(880, this.ctx.currentTime + 0.08);
+          gain.gain.setValueAtTime(0.15, this.ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.3);
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start();
+          osc.stop(this.ctx.currentTime + 0.3);
+        } catch(e) {}
+      }
+    }
+
+    const sound = new SoundEngine();
+
+    /* ==========================================================================
+       2. CURSOR MAGNÉTICO
+       ========================================================================== */
+    const cursor = document.getElementById('customCursor');
+    const cursorLabel = document.getElementById('cursorLabel');
+    let mouseX = -100, mouseY = -100;
+    let curX = -100, curY = -100;
+
+    window.addEventListener('mousemove', (e) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+    });
+
+    function updateCursor() {
+      curX += (mouseX - curX) * 0.25;
+      curY += (mouseY - curY) * 0.25;
+      cursor.style.transform = `translate3d(${curX}px, ${curY}px, 0) translate(-50%, -50%)`;
+      requestAnimationFrame(updateCursor);
+    }
+    updateCursor();
+
+    function setCursorActive(label = 'VER') {
+      cursor.classList.add('active');
+      cursorLabel.textContent = label;
+    }
+    function setCursorNormal() {
+      cursor.classList.remove('active');
+    }
+
+    document.querySelectorAll('a, button, .spec-cell').forEach(el => {
+      el.addEventListener('mouseenter', () => {
+        sound.playClick();
+        if (el.dataset.cursor) {
+          setCursorActive(el.dataset.cursor);
+        } else if (el.tagName === 'A') {
+          setCursorActive('LINK');
+        } else if (el.tagName === 'BUTTON') {
+          setCursorActive('ACT');
+        } else {
+          setCursorActive('INSP');
+        }
+      });
+      el.addEventListener('mouseleave', setCursorNormal);
+    });
+
+    /* ==========================================================================
+       3. ODÔMETRO MECÂNICO NO LOADER
+       ========================================================================== */
+    const odoHundreds = document.getElementById('odoHundreds');
+    const odoTens = document.getElementById('odoTens');
+    const odoUnits = document.getElementById('odoUnits');
+    const btnEnter = document.getElementById('btnEnter');
+    const loader = document.getElementById('loader');
+    const loaderStatus = document.getElementById('loaderStatusText');
+
+    setTimeout(() => {
+      sound.init();
+      // Animação de rotação dos rolos do odômetro
+      // 100%: Hundreds vai pra -50% (mostra 1); Tens vai pra -100% ou -0%; Units vai pra -100%
+      odoHundreds.style.transform = 'translateY(-50%)'; // 1
+      odoTens.style.transform = 'translateY(-90.9%)';     // 0
+      odoUnits.style.transform = 'translateY(-90.9%)';    // 0
+      loaderStatus.textContent = "SISTEMA PRONTO // TAXA DE QUADROS 60FPS ATIVA";
+      
+      setTimeout(() => {
+        btnEnter.classList.add('ready');
+      }, 1600);
+    }, 400);
+
+    function dismissLoader() {
+      sound.init();
+      sound.playChime();
+      loader.classList.add('complete');
+      document.body.classList.remove('loading-active');
+      document.documentElement.classList.remove('loading-active');
+    }
+
+    btnEnter.addEventListener('click', dismissLoader);
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !loader.classList.contains('complete')) {
+        dismissLoader();
+      }
+    });
+
+    /* ==========================================================================
+       4. RELÓGIO BRT AO VIVO NO HUD
+       ========================================================================== */
+    const hudClock = document.getElementById('hudClock');
+    function updateClock() {
+      const now = new Date();
+      // BRT: UTC-3
+      const brtTime = new Intl.DateTimeFormat('pt-BR', {
+        timeZone: 'America/Sao_Paulo',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false
+      }).format(now);
+      hudClock.textContent = `BRT: ${brtTime}`;
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    /* ==========================================================================
+       5. SISTEMA DE CANAIS DE PROJETO (CRT RETRO DISPLAY)
+       ========================================================================== */
+    const projects = [
+      {
+        channel: "CH 01",
+        tag: "01 // THREE.JS SCROLLYTELLING",
+        name: "NEXUS 3D",
+        desc: "Landing page no padrão Apple Scrollytelling. O scroll do usuário orquestra rotação cinemática em WebGL e visão explodida (exploded view) em 5 camadas com suspensão magnética a 60 FPS contínuos no iPhone.",
+        specs: ["Three.js", "WebGL", "Apple Grade", "<0.8s Load"],
+        url: "https://rianfrnds.github.io/nexus-3d/",
+        renderType: "cube"
+      },
+      {
+        channel: "CH 02",
+        tag: "02 // BLINDAGEM SEMÂNTICA GEO",
+        name: "GEO 360° ENGINE",
+        desc: "Arquitetura de dados semânticos e otimização para motores de resposta generativa (ChatGPT, Perplexity e Claude). Conecta a marca ao Knowledge Graph e assegura recomendação orgânica em IAs.",
+        specs: ["GEO Engine", "Schema.org", "LLMs.txt", "Knowledge Graph"],
+        url: "https://rianfernandes.com.br",
+        renderType: "network"
+      },
+      {
+        channel: "CH 03",
+        tag: "03 // MULTI-AGENT AUTONOMOUS SYSTEM",
+        name: "HERMES CLUSTER",
+        desc: "Orquestrador autônomo multi-provedor com failover resiliente em tempo real. Monitoramento automatizado, automação de tarefas e esteira autônoma de produção com confiabilidade para rodar 24/7.",
+        specs: ["FastAPI", "Python", "CLIProxyAPI", "Docker Failover"],
+        url: "https://github.com/rianfrnds",
+        renderType: "pulse"
+      },
+      {
+        channel: "CH 04",
+        tag: "04 // HIGH-PERFORMANCE WEB APP",
+        name: "MANHWA READER",
+        desc: "Aplicação PWA orientada ao toque e leitor de quadrinhos com cache inteligente offline, zero latência e carregamento preditivo otimizado para navegação mobile de alta densidade.",
+        specs: ["PWA", "Offline-First", "Web Workers", "Touch Engine"],
+        url: "https://github.com/rianfrnds",
+        renderType: "grid"
+      }
+    ];
+
+    let currentChannelIdx = 0;
+    const channelDisplay = document.getElementById('channelDisplay');
+    const projTag = document.getElementById('projTag');
+    const projName = document.getElementById('projName');
+    const projDesc = document.getElementById('projDesc');
+    const projSpecs = document.getElementById('projSpecs');
+    const projLink = document.getElementById('projLink');
+    const btnPrev = document.getElementById('btnPrevChannel');
+    const btnNext = document.getElementById('btnNextChannel');
+
+    function renderChannel(idx) {
+      sound.playBeep(480 + idx * 60);
+      const p = projects[idx];
+      channelDisplay.textContent = p.channel;
+      projTag.textContent = p.tag;
+      projName.textContent = p.name;
+      projDesc.textContent = p.desc;
+      projLink.href = p.url;
+
+      projSpecs.innerHTML = '';
+      p.specs.forEach(s => {
+        const span = document.createElement('span');
+        span.className = 'spec-pill';
+        span.textContent = s;
+        projSpecs.appendChild(span);
+      });
+
+      // Dispara ruído analógico de transição no canvas
+      crtStaticNoise = 1.0;
+    }
+
+    btnPrev.addEventListener('click', () => {
+      currentChannelIdx = (currentChannelIdx - 1 + projects.length) % projects.length;
+      renderChannel(currentChannelIdx);
+    });
+    btnNext.addEventListener('click', () => {
+      currentChannelIdx = (currentChannelIdx + 1) % projects.length;
+      renderChannel(currentChannelIdx);
+    });
+
+    /* ==========================================================================
+       6. CRT MONITOR CANVAS (RENDERIZAÇÃO DINÂMICA RETRO)
+       ========================================================================== */
+    const crtCanvas = document.getElementById('crtCanvas');
+    const crtCtx = crtCanvas.getContext('2d');
+    let crtStaticNoise = 0;
+    let crtAngle = 0;
+
+    function drawCRT() {
+      crtCtx.fillStyle = '#060608';
+      crtCtx.fillRect(0, 0, crtCanvas.width, crtCanvas.height);
+
+      const p = projects[currentChannelIdx];
+      crtAngle += 0.02;
+
+      // Desenha o gráfico temático de cada projeto
+      crtCtx.save();
+      crtCtx.translate(crtCanvas.width / 2, crtCanvas.height / 2);
+
+      if (p.renderType === "cube") {
+        // Cubo 3D wireframe girando
+        const size = 70;
+        const cos = Math.cos(crtAngle);
+        const sin = Math.sin(crtAngle);
+        crtCtx.strokeStyle = '#ff6a00';
+        crtCtx.lineWidth = 2;
+        
+        crtCtx.beginPath();
+        // Face frontal
+        crtCtx.strokeRect(-size * cos, -size, size * 2 * cos, size * 2);
+        // Face traseira
+        crtCtx.strokeRect(-size * sin, -size * 0.7, size * 2 * sin, size * 1.4);
+        crtCtx.stroke();
+      } else if (p.renderType === "network") {
+        // Grafo semântico com nós conectados
+        crtCtx.strokeStyle = '#ff6a00';
+        crtCtx.fillStyle = '#ff6a00';
+        for (let i = 0; i < 7; i++) {
+          const a = crtAngle + (i * Math.PI * 2) / 7;
+          const r = 80 + Math.sin(crtAngle * 2 + i) * 15;
+          const x = Math.cos(a) * r;
+          const y = Math.sin(a) * r;
+          crtCtx.beginPath();
+          crtCtx.arc(x, y, 5, 0, Math.PI * 2);
+          crtCtx.fill();
+          crtCtx.beginPath();
+          crtCtx.moveTo(0, 0);
+          crtCtx.lineTo(x, y);
+          crtCtx.stroke();
+        }
+      } else if (p.renderType === "pulse") {
+        // Ondas de cluster e pulso
+        for (let r = 20; r < 140; r += 25) {
+          const currentR = (r + (crtAngle * 30)) % 140;
+          crtCtx.strokeStyle = `rgba(255, 106, 0, ${1 - currentR / 140})`;
+          crtCtx.lineWidth = 2;
+          crtCtx.beginPath();
+          crtCtx.arc(0, 0, currentR, 0, Math.PI * 2);
+          crtCtx.stroke();
+        }
+      } else {
+        // Grid de escaneamento de dados
+        crtCtx.strokeStyle = 'rgba(255, 106, 0, 0.4)';
+        crtCtx.lineWidth = 1;
+        const step = 30;
+        for (let x = -150; x <= 150; x += step) {
+          crtCtx.beginPath();
+          crtCtx.moveTo(x, -100);
+          crtCtx.lineTo(x, 100);
+          crtCtx.stroke();
+        }
+        for (let y = -100; y <= 100; y += step) {
+          crtCtx.beginPath();
+          crtCtx.moveTo(-150, y);
+          crtCtx.lineTo(150, y);
+          crtCtx.stroke();
+        }
+      }
+
+      crtCtx.restore();
+
+      // Ruído de TV analógica quando troca de canal
+      if (crtStaticNoise > 0.05) {
+        const imgData = crtCtx.getImageData(0, 0, crtCanvas.width, crtCanvas.height);
+        const data = imgData.data;
+        for (let i = 0; i < data.length; i += 4) {
+          if (Math.random() < crtStaticNoise) {
+            const val = Math.random() * 255;
+            data[i] = val;
+            data[i + 1] = val * 0.5; // Matiz quente de ruído
+            data[i + 2] = 0;
+          }
+        }
+        crtCtx.putImageData(imgData, 0, 0);
+        crtStaticNoise *= 0.88; // Decaimento suave do ruído
+      }
+
+      // Marcador de canal na tela
+      crtCtx.font = '12px "Silkscreen"';
+      crtCtx.fillStyle = '#ff6a00';
+      crtCtx.fillText(p.channel + ' // 60FPS LIVE', 15, 25);
+
+      requestAnimationFrame(drawCRT);
+    }
+    drawCRT();
+
+    /* ==========================================================================
+       7. COPIAR E-MAIL COM FEEDBACK TÁTIL E SONORO
+       ========================================================================== */
+    const btnCopyEmail = document.getElementById('btnCopyEmail');
+    const copyBtnText = document.getElementById('copyBtnText');
+
+    btnCopyEmail.addEventListener('click', () => {
+      navigator.clipboard.writeText('rian@rianfernandes.com.br').then(() => {
+        sound.playSuccess();
+        btnCopyEmail.classList.add('copied');
+        copyBtnText.textContent = 'COPIED!';
+        setTimeout(() => {
+          btnCopyEmail.classList.remove('copied');
+          copyBtnText.textContent = 'COPY';
+        }, 2200);
+      });
+    });
+
+    /* ==========================================================================
+       8. EASTER EGG: PONG 60FPS ARCADE NO CANVAS
+       ========================================================================== */
+    const btnOpenPong = document.getElementById('btnOpenPong');
+    const btnClosePong = document.getElementById('btnClosePong');
+    const pongDrawer = document.getElementById('pongDrawer');
+    const pongCanvas = document.getElementById('pongCanvas');
+    const pongCtx = pongCanvas.getContext('2d');
+    const pongScore = document.getElementById('pongScore');
+
+    let pongRunning = false;
+    let p1Y = 160, p2Y = 160;
+    const paddleH = 70, paddleW = 10;
+    let ballX = 380, ballY = 200, ballVx = 5, ballVy = 3;
+    let scoreP1 = 0, scoreCPU = 0;
+
+    btnOpenPong.addEventListener('click', () => {
+      sound.playClick();
+      pongDrawer.classList.add('active');
+      pongRunning = true;
+      ballX = pongCanvas.width / 2;
+      ballY = pongCanvas.height / 2;
+    });
+
+    btnClosePong.addEventListener('click', () => {
+      sound.playClick();
+      pongDrawer.classList.remove('active');
+      pongRunning = false;
+    });
+
+    pongCanvas.addEventListener('mousemove', (e) => {
+      const rect = pongCanvas.getBoundingClientRect();
+      const relativeY = e.clientY - rect.top;
+      p1Y = Math.max(0, Math.min(pongCanvas.height - paddleH, relativeY - paddleH / 2));
+    });
+
+    function loopPong() {
+      if (pongRunning) {
+        // CPU AI
+        const targetY = ballY - paddleH / 2;
+        p2Y += (targetY - p2Y) * 0.08;
+        p2Y = Math.max(0, Math.min(pongCanvas.height - paddleH, p2Y));
+
+        // Bola
+        ballX += ballVx;
+        ballY += ballVy;
+
+        // Paredes superior e inferior
+        if (ballY <= 0 || ballY >= pongCanvas.height) {
+          ballVy *= -1;
+          sound.playClick();
+        }
+
+        // Colisão Player 1 (Esquerda)
+        if (ballX <= 25 && ballY >= p1Y && ballY <= p1Y + paddleH) {
+          ballVx = Math.abs(ballVx) * 1.05;
+          ballVy += (ballY - (p1Y + paddleH / 2)) * 0.1;
+          sound.playBeep(640);
+        }
+
+        // Colisão CPU (Direita)
+        if (ballX >= pongCanvas.width - 25 && ballY >= p2Y && ballY <= p2Y + paddleH) {
+          ballVx = -Math.abs(ballVx) * 1.05;
+          ballVy += (ballY - (p2Y + paddleH / 2)) * 0.1;
+          sound.playBeep(480);
+        }
+
+        // Pontuação
+        if (ballX < 0) {
+          scoreCPU++;
+          ballX = pongCanvas.width / 2;
+          ballY = pongCanvas.height / 2;
+          ballVx = 4;
+          pongScore.textContent = `PLAYER: ${scoreP1} | CPU: ${scoreCPU}`;
+        }
+        if (ballX > pongCanvas.width) {
+          scoreP1++;
+          ballX = pongCanvas.width / 2;
+          ballY = pongCanvas.height / 2;
+          ballVx = -4;
+          pongScore.textContent = `PLAYER: ${scoreP1} | CPU: ${scoreCPU}`;
+        }
+
+        // Desenhar Pong
+        pongCtx.fillStyle = '#0a0a0e';
+        pongCtx.fillRect(0, 0, pongCanvas.width, pongCanvas.height);
+
+        // Rede central pontilhada
+        pongCtx.strokeStyle = '#27272a';
+        pongCtx.setLineDash([6, 6]);
+        pongCtx.beginPath();
+        pongCtx.moveTo(pongCanvas.width / 2, 0);
+        pongCtx.lineTo(pongCanvas.width / 2, pongCanvas.height);
+        pongCtx.stroke();
+        pongCtx.setLineDash([]);
+
+        // Paddles
+        pongCtx.fillStyle = '#ff6a00';
+        pongCtx.fillRect(15, p1Y, paddleW, paddleH);
+        pongCtx.fillStyle = '#f4f4f5';
+        pongCtx.fillRect(pongCanvas.width - 25, p2Y, paddleW, paddleH);
+
+        // Bola
+        pongCtx.fillStyle = '#ff6a00';
+        pongCtx.fillRect(ballX - 5, ballY - 5, 10, 10);
+      }
+      requestAnimationFrame(loopPong);
+    }
+    loopPong();
+
+    /* ==========================================================================
+       9. VOLTAR AO TOPO
+       ========================================================================== */
+    document.getElementById('btnBackToTop').addEventListener('click', () => {
+      sound.playClick();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  </script>
+</body>
+</html>
