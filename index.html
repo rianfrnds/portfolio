@@ -1619,7 +1619,16 @@
       },
       {
         channel: "CH 02",
-        tag: "02 // BLINDAGEM SEMÂNTICA GEO",
+        tag: "02 // 3D COMMERCE & SCROLLYTELLING",
+        name: "SOLARA HALO S1",
+        desc: "Showcase e-commerce 3D de áudio espacial no padrão Apple/Oxvo. Scrollytelling cinematográfico em WebGL, customizador de acabamentos em tempo real (Meshopt WASM) e dock flutuante de checkout.",
+        specs: ["Three.js", "Meshopt WASM", "PBR Materials", "Live Swatches"],
+        url: "https://rianfrnds.github.io/solara-3d/",
+        renderType: "soundwave"
+      },
+      {
+        channel: "CH 03",
+        tag: "03 // BLINDAGEM SEMÂNTICA GEO",
         name: "GEO 360° ENGINE",
         desc: "Arquitetura de dados semânticos e otimização para motores de resposta generativa (ChatGPT, Perplexity e Claude). Conecta a marca ao Knowledge Graph e assegura recomendação orgânica em IAs.",
         specs: ["GEO Engine", "Schema.org", "LLMs.txt", "Knowledge Graph"],
@@ -1627,8 +1636,8 @@
         renderType: "network"
       },
       {
-        channel: "CH 03",
-        tag: "03 // MULTI-AGENT AUTONOMOUS SYSTEM",
+        channel: "CH 04",
+        tag: "04 // MULTI-AGENT AUTONOMOUS SYSTEM",
         name: "HERMES CLUSTER",
         desc: "Orquestrador autônomo multi-provedor com failover resiliente em tempo real. Monitoramento automatizado, automação de tarefas e esteira autônoma de produção com confiabilidade para rodar 24/7.",
         specs: ["FastAPI", "Python", "CLIProxyAPI", "Docker Failover"],
@@ -1636,8 +1645,8 @@
         renderType: "pulse"
       },
       {
-        channel: "CH 04",
-        tag: "04 // HIGH-PERFORMANCE WEB APP",
+        channel: "CH 05",
+        tag: "05 // HIGH-PERFORMANCE WEB APP",
         name: "MANHWA READER",
         desc: "Aplicação PWA orientada ao toque e leitor de quadrinhos com cache inteligente offline, zero latência e carregamento preditivo otimizado para navegação mobile de alta densidade.",
         specs: ["PWA", "Offline-First", "Web Workers", "Touch Engine"],
@@ -1749,6 +1758,23 @@
         // Face traseira
         crtCtx.strokeRect(-size * sin, -size * 0.7, size * 2 * sin, size * 1.4);
         crtCtx.stroke();
+      } else if (p.renderType === "soundwave") {
+        // Ondas sonoras esféricas de áudio espacial
+        crtCtx.strokeStyle = '#ff6a00';
+        crtCtx.lineWidth = 1.5;
+        for (let ring = 0; ring < 4; ring++) {
+          crtCtx.beginPath();
+          const rBase = 35 + ring * 22;
+          for (let th = 0; th < Math.PI * 2; th += 0.1) {
+            const r = rBase + Math.sin(th * 6 + crtAngle * 3 + ring) * 8;
+            const x = Math.cos(th) * r;
+            const y = Math.sin(th) * (r * 0.7);
+            if (th === 0) crtCtx.moveTo(x, y);
+            else crtCtx.lineTo(x, y);
+          }
+          crtCtx.closePath();
+          crtCtx.stroke();
+        }
       } else if (p.renderType === "network") {
         // Grafo semântico com nós conectados
         crtCtx.strokeStyle = '#ff6a00';
