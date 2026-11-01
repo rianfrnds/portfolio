@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Rian Fernandes | Systems Architect & High-End Digital Products</title>
   <meta name="description" content="Engenheiro de software, arquiteto de sistemas e criador de experiências digitais imersivas. Porto Alegre, RS. Death to vibe-coding.">
   
@@ -36,6 +36,11 @@
       
       --ease-snappy: cubic-bezier(0.16, 1, 0.3, 1);
       --ease-mechanical: cubic-bezier(0.25, 1, 0.5, 1);
+      
+      --safe-top: env(safe-area-inset-top, 0px);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+      --safe-left: env(safe-area-inset-left, 0px);
+      --safe-right: env(safe-area-inset-right, 0px);
     }
 
     *, *::before, *::after {
@@ -137,6 +142,14 @@
     }
     .custom-cursor.active .custom-cursor-label {
       display: block;
+    }
+    @media (hover: none) and (pointer: coarse), (max-width: 768px) {
+      .custom-cursor {
+        display: none !important;
+      }
+      body, a, button, input {
+        cursor: auto !important;
+      }
     }
 
     /* ==========================================================================
@@ -299,14 +312,15 @@
       top: 0;
       left: 0;
       right: 0;
-      height: 64px;
-      background-color: rgba(18, 18, 20, 0.85);
-      backdrop-filter: blur(8px);
+      height: calc(60px + var(--safe-top));
+      padding: var(--safe-top) max(1.25rem, var(--safe-right)) 0 max(1.25rem, var(--safe-left));
+      background-color: rgba(18, 18, 20, 0.88);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
       border-bottom: 1px solid var(--border);
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0 2.5vw;
       z-index: 1000;
     }
 
@@ -349,14 +363,16 @@
 
     .btn-game-toggle {
       border: 1px solid var(--border);
-      padding: 0.4rem 0.8rem;
+      padding: 0.5rem 0.85rem;
+      min-height: 44px;
       font-size: 0.75rem;
-      color: var(--text-muted);
+      color: #a1a1aa;
       letter-spacing: 1px;
       transition: all 0.2s;
-      display: flex;
+      display: inline-flex;
       align-items: center;
       gap: 0.5rem;
+      cursor: pointer;
     }
     .btn-game-toggle:hover {
       border-color: var(--accent);
@@ -626,6 +642,14 @@
       text-transform: uppercase;
     }
 
+    .project-title-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
     .project-name {
       font-family: var(--font-display);
       font-size: clamp(2.5rem, 5vw, 4.5rem);
@@ -883,55 +907,263 @@
     }
 
     /* ==========================================================================
-       RESPONSIVIDADE RIGOROSA
+       RESPONSIVIDADE RIGOROSA (TABLET & MOBILE)
        ========================================================================== */
     @media (max-width: 900px) {
-      .tech-specs-grid {
-        grid-template-columns: 1fr 1fr;
-      }
-      .spec-cell:nth-child(2) {
-        border-right: none;
+      .hud-center {
+        display: none;
       }
       .manifesto-columns {
         grid-template-columns: 1fr;
         gap: 2rem;
       }
-      .crt-screen-container {
-        grid-template-columns: 1fr;
-        gap: 2rem;
-        padding: 1.5rem;
-      }
-      .contact-bar-container {
-        grid-template-columns: 1fr 100px;
-      }
-      .footer-bottom-grid {
-        grid-template-columns: 1fr;
-        gap: 1.5rem;
-        text-align: left;
-      }
-      .footer-back-to-top {
-        text-align: left;
-      }
     }
 
-    @media (max-width: 600px) {
-      .hud-center {
-        display: none;
+    @media (max-width: 768px) {
+      /* Safe padding e container */
+      .hero {
+        padding: calc(76px + var(--safe-top)) 4vw 30px 4vw;
+        min-height: auto;
+        justify-content: flex-start;
+        gap: 1.5rem;
       }
+
+      /* Faixa superior do Hero: empilhar no mobile com contraste nítido */
+      .hero-preheader {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+        padding-bottom: 0.75rem;
+        margin-bottom: 1.25rem;
+        font-size: 0.75rem;
+        line-height: 1.4;
+      }
+      .hero-preheader span:not(.tag) {
+        color: #a1a1aa;
+      }
+
+      .hero-title-wrap {
+        margin: 0.25rem 0 1.25rem 0;
+      }
+      .hero-huge-title {
+        font-size: clamp(3.2rem, 13vw, 5.5rem);
+        line-height: 0.88;
+      }
+      .hero-submanifesto {
+        font-size: 0.85rem;
+        line-height: 1.5;
+        margin-top: 1rem;
+      }
+
+      /* Tabela de Specs no mobile: 1 coluna com bordas perfeitas e contraste alto */
       .tech-specs-grid {
         grid-template-columns: 1fr;
+        margin-top: 1rem;
       }
       .spec-cell {
+        padding: 1rem;
         border-right: none;
         border-bottom: 1px solid var(--border);
       }
+      .spec-cell:last-child {
+        border-bottom: none;
+      }
+      .spec-label {
+        font-size: 0.75rem;
+        color: #a1a1aa;
+      }
+      .spec-value {
+        font-size: 0.95rem;
+      }
+
+      /* Manifesto / About */
+      .manifesto-section {
+        padding: 60px 4vw;
+      }
+      .manifesto-title {
+        font-size: clamp(2rem, 7.5vw, 3.5rem);
+        max-width: 100%;
+        margin-bottom: 2rem;
+      }
+      .manifesto-columns {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+        font-size: 0.95rem;
+      }
+
+      /* Seção The Archives / CRT */
+      .work-section {
+        padding: 60px 4vw;
+      }
+      .work-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1.25rem;
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+      }
+      .work-title {
+        font-size: clamp(2.8rem, 10vw, 4.8rem);
+      }
+      .channel-tuner {
+        width: 100%;
+        justify-content: space-between;
+      }
+      .btn-channel {
+        min-width: 48px;
+        min-height: 48px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.25rem;
+        cursor: pointer;
+      }
+      .channel-display {
+        flex: 1;
+        text-align: center;
+        font-size: 1.15rem;
+        padding: 0.6rem 1rem;
+      }
+
+      .crt-screen-container {
+        grid-template-columns: 1fr;
+        padding: 1.25rem 1rem;
+        gap: 1.75rem;
+      }
+      .crt-canvas-wrapper {
+        aspect-ratio: 16 / 10;
+        width: 100%;
+      }
+      .project-title-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+      }
+      .project-name {
+        font-size: clamp(2rem, 7.5vw, 3.2rem);
+      }
+      .project-link-btn {
+        width: auto;
+        justify-content: center;
+        min-height: 44px;
+        padding: 0.5rem 1rem;
+        font-size: 0.8rem;
+        margin-top: 0;
+      }
+
+      /* Footer */
+      footer.monumental {
+        padding: 60px 4vw calc(40px + var(--safe-bottom)) 4vw;
+      }
+      .footer-top-meta {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.6rem;
+        padding-bottom: 1.5rem;
+        margin-bottom: 2rem;
+      }
+      .footer-top-meta span {
+        color: #a1a1aa;
+      }
+      .footer-cta-headline {
+        font-size: clamp(2.6rem, 9.5vw, 4.8rem);
+        line-height: 0.9;
+        margin-bottom: 2rem;
+      }
       .contact-bar-container {
         grid-template-columns: 1fr;
+        margin-bottom: 2.5rem;
+      }
+      .contact-email-link {
+        padding: 1.25rem 1rem;
+        font-size: clamp(0.95rem, 4.2vw, 1.35rem);
+        min-height: 52px;
       }
       .btn-copy-action {
         border-left: none;
         border-top: 1px solid var(--border);
+        min-height: 48px;
+        font-size: 0.9rem;
+        background-color: rgba(255, 106, 0, 0.08);
+        color: var(--accent);
+      }
+      .footer-bottom-grid {
+        grid-template-columns: 1fr;
+        gap: 1.25rem;
+        text-align: left;
+        color: #a1a1aa;
+      }
+      .footer-social-links {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+      }
+      .footer-social-links a {
+        min-height: 44px;
+        padding: 0.5rem 0.75rem;
+        border: 1px solid var(--border);
+        display: inline-flex;
+        align-items: center;
+        color: #f4f4f5;
+        font-size: 0.8rem;
+        letter-spacing: 1px;
+      }
+      .footer-back-to-top {
+        text-align: left;
+      }
+      .footer-back-to-top button {
+        min-height: 44px;
+        padding: 0.5rem 0.75rem;
+        color: var(--accent);
+        font-size: 0.8rem;
+        letter-spacing: 1px;
+        font-weight: 700;
+        cursor: pointer;
+      }
+      .monumental-signature {
+        margin-top: 3rem;
+        padding-top: 1.5rem;
+      }
+      .signature-text {
+        font-size: clamp(2.4rem, 9.5vw, 5rem);
+      }
+      .signature-block {
+        width: 32px;
+        height: 28px;
+        margin-left: 0.75rem;
+      }
+
+      /* Pong Drawer */
+      .pong-drawer {
         padding: 1rem;
+      }
+      .pong-container {
+        width: 100%;
+        max-width: 480px;
+        padding: 1rem;
+      }
+      .btn-close-pong {
+        min-height: 44px;
+        min-width: 44px;
+        padding: 0.5rem 0.85rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        color: #f4f4f5;
+        cursor: pointer;
+      }
+      #pongCanvas {
+        height: clamp(240px, 45vh, 320px);
+        touch-action: none;
+      }
+      .pong-controls {
+        flex-direction: column;
+        gap: 0.5rem;
+        align-items: center;
+        text-align: center;
       }
     }
   </style>
@@ -1104,7 +1336,12 @@
 
         <div class="project-meta">
           <span class="project-tag" id="projTag">01 // THREE.JS SCROLLYTELLING</span>
-          <h3 class="project-name" id="projName">NEXUS 3D</h3>
+          <div class="project-title-row">
+            <h3 class="project-name" id="projName">NEXUS 3D</h3>
+            <a href="https://rianfrnds.github.io/nexus-3d/" target="_blank" rel="noopener noreferrer" class="project-link-btn" id="projLink">
+              <span>VISITAR ↗</span>
+            </a>
+          </div>
           <p class="project-desc" id="projDesc">
             Landing page no padrão Apple Scrollytelling. O scroll do usuário orquestra rotação cinemática em WebGL e visão explodida (exploded view) em 5 camadas com suspensão magnética a 60 FPS no iPhone.
           </p>
@@ -1114,9 +1351,6 @@
             <span class="spec-pill">Apple Grade</span>
             <span class="spec-pill">&lt;0.8s Load</span>
           </div>
-          <a href="https://rianfrnds.github.io/nexus-3d/" target="_blank" rel="noopener noreferrer" class="project-link-btn" id="projLink">
-            <span>VISITAR PROJETO ↗</span>
-          </a>
         </div>
       </div>
     </section>
@@ -1146,7 +1380,7 @@
 
     <div class="footer-bottom-grid">
       <div>
-        <span>© 2026 RIAN FERNANDES.. HAND-CRAFTED IN RS. MOSTLY.</span>
+        <span>© 2026 RIAN FERNANDES. HAND-CRAFTED IN RS. MOSTLY.</span>
       </div>
       <div class="footer-social-links">
         <a href="https://instagram.com/rianfernandesdev" target="_blank" rel="noopener noreferrer">INSTAGRAM ↗</a>
@@ -1452,6 +1686,36 @@
       renderChannel(currentChannelIdx);
     });
 
+    // Suporte nativo a Swipe no celular para trocar de canal
+    const crtContainer = document.querySelector('.crt-screen-container');
+    let touchStartX = 0;
+    let touchStartY = 0;
+
+    crtContainer.addEventListener('touchstart', (e) => {
+      if (e.touches && e.touches[0]) {
+        touchStartX = e.touches[0].clientX;
+        touchStartY = e.touches[0].clientY;
+      }
+    }, { passive: true });
+
+    crtContainer.addEventListener('touchend', (e) => {
+      if (e.changedTouches && e.changedTouches[0]) {
+        const deltaX = e.changedTouches[0].clientX - touchStartX;
+        const deltaY = e.changedTouches[0].clientY - touchStartY;
+        if (Math.abs(deltaX) > 40 && Math.abs(deltaX) > Math.abs(deltaY)) {
+          if (deltaX < 0) {
+            // Swipe Left -> Próximo Canal
+            currentChannelIdx = (currentChannelIdx + 1) % projects.length;
+            renderChannel(currentChannelIdx);
+          } else {
+            // Swipe Right -> Canal Anterior
+            currentChannelIdx = (currentChannelIdx - 1 + projects.length) % projects.length;
+            renderChannel(currentChannelIdx);
+          }
+        }
+      }
+    }, { passive: true });
+
     /* ==========================================================================
        6. CRT MONITOR CANVAS (RENDERIZAÇÃO DINÂMICA RETRO)
        ========================================================================== */
@@ -1606,11 +1870,30 @@
       pongRunning = false;
     });
 
-    pongCanvas.addEventListener('mousemove', (e) => {
+    function handlePaddleMove(clientY) {
       const rect = pongCanvas.getBoundingClientRect();
-      const relativeY = e.clientY - rect.top;
-      p1Y = Math.max(0, Math.min(pongCanvas.height - paddleH, relativeY - paddleH / 2));
+      const relativeY = clientY - rect.top;
+      const scaleY = pongCanvas.height / rect.height;
+      p1Y = Math.max(0, Math.min(pongCanvas.height - paddleH, (relativeY * scaleY) - paddleH / 2));
+    }
+
+    pongCanvas.addEventListener('mousemove', (e) => {
+      handlePaddleMove(e.clientY);
     });
+
+    pongCanvas.addEventListener('touchmove', (e) => {
+      e.preventDefault();
+      if (e.touches && e.touches[0]) {
+        handlePaddleMove(e.touches[0].clientY);
+      }
+    }, { passive: false });
+
+    pongCanvas.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      if (e.touches && e.touches[0]) {
+        handlePaddleMove(e.touches[0].clientY);
+      }
+    }, { passive: false });
 
     function loopPong() {
       if (pongRunning) {
